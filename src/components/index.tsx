@@ -219,7 +219,7 @@ function MainContent({ role }: { role: 'doctor' | 'patient' | 'nurse' }) {
     return contentByRole[role]
 }
 
-export default function Overview({ role = 'nurse' }: Readonly<{ role?: 'doctor' | 'patient' | 'nurse' }>) {
+export default function Overview({ role = 'doctor' }: Readonly<{ role?: 'doctor' | 'patient' | 'nurse' }>) {
     const [isNavbarVisible, setIsNavbarVisible] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
