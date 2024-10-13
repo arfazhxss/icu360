@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Navbar from "@/components/navbar"
-import { Menu, X } from "lucide-react"
+import { X } from "lucide-react"
 // import { PatientRecord } from "@/utils/types"
 
 export const metadata: Metadata = {
