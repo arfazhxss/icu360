@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Navbar from "@/components/navbar"
+import { Menu, X } from "lucide-react"
 // import { PatientRecord } from "@/utils/types"
 
 export const metadata: Metadata = {
@@ -255,21 +256,29 @@ export default function Overview({ role = 'doctor' }: Readonly<{ role?: 'doctor'
             )}
             <div className={`flex-1 overflow-auto relative ${isMobile ? 'pb-16' : ''} ${bgColors[role]}`}>
                 {isMobile && (
-                    <button
-                        className={`fixed top-4 ${isNavbarVisible ? 'left-4' : 'right-4'} z-50 p-2 bg-white rounded-full shadow-lg transition-all duration-300 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary`}
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className={`fixed top-4 ${isNavbarVisible ? 'left-4' : 'right-4'} z-50 p-2 bg-slate-50 rounded-full shadow-sm transition-all duration-150 hover:bg-gray-100 focus:outline-none focus:ring-primary`}
                         onClick={toggleNavbar}
                         aria-label={isNavbarVisible ? "Close menu" : "Open menu"}
                     >
-                        {isNavbarVisible ? (
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        ) : (
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        )}
-                    </button>
+                        {
+                            isNavbarVisible ? <X className="h-4 w-4" /> : <svg width="400" height="400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        }
+                    </Button>
+                )}
+                {isMobile && isNavbarVisible && (
+                    <button
+                        className="fixed inset-0 bg-background/80 backdrop-blur-sm z-30"
+                        onClick={toggleNavbar}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                toggleNavbar();
+                            }
+                        }}
+                        aria-label="Close menu"
+                    />
                 )}
                 {isMobile && (
                     <div
