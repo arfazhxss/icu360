@@ -1,5 +1,3 @@
-// src/app/account/login/page.tsx
-
 "use client"
 import { useState } from 'react'
 import { motion } from 'framer-motion'
@@ -8,10 +6,15 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { useRole } from '@/contexts/RoleContext'
+import TermsOfService from '@/components/terms-of-service'
+import PrivacyPolicy from '@/components/privacy-policy'
 
 export default function HealthcareLogin() {
     const [userType, setUserType] = useState('')
+    const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false)
+    const [showTermsOfService, setShowTermsOfService] = useState(false)
     const router = useRouter()
     const { setRole } = useRole()
 
@@ -33,7 +36,7 @@ export default function HealthcareLogin() {
                 transition={{ duration: 0.5 }}
                 className="w-full max-w-md"
             >
-                <Card className="shadow-lg border-0">
+                <Card className="shadow-lg">
                     <CardHeader className="space-y-1 pb-8">
                         <div className="flex justify-center mb-4">
                             <motion.div
@@ -91,7 +94,25 @@ export default function HealthcareLogin() {
                             Continue
                         </Button>
                         <p className="text-xs text-center text-muted-foreground">
-                            By continuing, you agree to our <a href="#" className="underline hover:text-primary">Terms of Service</a> and <a href="#" className="underline hover:text-primary">Privacy Policy</a>.
+                            By continuing, you agree to our{" "}
+                            <Dialog open={showTermsOfService} onOpenChange={setShowTermsOfService}>
+                                <DialogTrigger asChild>
+                                    <button className="underline hover:text-primary">Terms of Service</button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[525px]">
+                                    <TermsOfService setShowTermsOfService={setShowTermsOfService} />
+                                </DialogContent>
+                            </Dialog>{" "}
+                            and{" "}
+                            <Dialog open={showPrivacyPolicy} onOpenChange={setShowPrivacyPolicy}>
+                                <DialogTrigger asChild>
+                                    <button className="underline hover:text-primary">Privacy Policy</button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[525px]">
+                                    <PrivacyPolicy setShowPrivacyPolicy={setShowPrivacyPolicy} />
+                                </DialogContent>
+                            </Dialog>
+                            .
                         </p>
                     </CardFooter>
                 </Card>
