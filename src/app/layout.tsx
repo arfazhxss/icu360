@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { RoleProvider } from "@/contexts/RoleContext";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -15,7 +16,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "ICU 360",
-  description: "Developed by MediCure Inc.",
+  description: "Developed by Shaban, Aleksia, Shounit, Isaac and Arfaz",
 };
 
 export default function RootLayout({
@@ -28,7 +29,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <RoleProvider>
+          {children}
+        </RoleProvider>
       </body>
     </html>
   );
