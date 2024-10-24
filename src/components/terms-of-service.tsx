@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+npmimport { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
