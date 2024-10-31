@@ -1,16 +1,17 @@
+// src/app/dashboard/page.tsx
 "use client"
-import { Metadata } from 'next'
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Navbar from "@/components/navbar"
 import { X } from "lucide-react"
+import { useRole } from '@/contexts/RoleContext'
 // import { PatientRecord } from "@/utils/types"
 
-export const metadata: Metadata = {
-    title: 'My HealthApp | Overview',
-    description: 'Overview of your health data',
-}
+// export const metadata: Metadata = {
+//     title: 'My HealthApp | Overview',
+//     description: 'Overview of your health data',
+// }
 
 // async function getData(): Promise<PatientRecord> {
 //     const res = await fetch("")
@@ -218,12 +219,14 @@ function MainContent({ role }: { role: 'doctor' | 'patient' | 'nurse' }) {
     return contentByRole[role]
 }
 
-export default function Overview({ role = 'doctor' }: Readonly<{ role?: 'doctor' | 'patient' | 'nurse' }>) {
+export default function Overview() {
+    const { role } = useRole();
     const [isNavbarVisible, setIsNavbarVisible] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
         const checkScreenSize = () => {
+            console.log('checkScreenSize called');
             setIsMobile(window.innerWidth < 768);
         };
 
@@ -239,12 +242,21 @@ export default function Overview({ role = 'doctor' }: Readonly<{ role?: 'doctor'
         doctor: { name: "Dr. Jane Smith", online: "Showing Offline" },
         patient: { name: "John Doe", online: "Showing Online" },
         nurse: { name: "Emily Johnson", online: "Showing Offline" }
+        // receptionist: { name: "Alex Brown", online: "Showing Online" }
     }
 
     const bgColors = {
         doctor: 'bg-blue-36',
         patient: 'bg-red-36',
-        nurse: 'bg-purple-36'
+        nurse: 'bg-purple-36',
+        receptionist: 'bg-green-36'
+    }
+
+    console.log('role:', role);
+
+    if (!role) {
+        // Handle case where role is not set
+        return <div>Please log in to view this page</div>
     }
 
     return (
