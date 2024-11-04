@@ -10,50 +10,42 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import { Home, Users, Stethoscope, Clipboard, Calendar, PieChart, Settings, HelpCircle, User, UserCog, Activity, ChevronRight } from "lucide-react"
+import { Settings, HelpCircle, ChevronRight } from "lucide-react"
+import { doctorNavItems } from '@/components/dashboards/doctor-content'
+import { patientNavItems } from '@/components/dashboards/patient-content'
+import { nurseNavItems } from '@/components/dashboards/nurse-content'
+import { pharmacistNavItems } from '@/components/dashboards/pharmacist-content'
+import { receptionistNavItems } from '@/components/dashboards/receptionist-content'
 
 interface NavbarProps {
     name: string
-    role: 'doctor' | 'patient' | 'nurse'
+    role: 'doctor' | 'patient' | 'nurse' | 'pharmacist' | 'receptionist'
     online: string
     isMobile: boolean
 }
 
 const roleIcons = {
-    doctor: Stethoscope,
-    patient: User,
-    nurse: UserCog
+    doctor: doctorNavItems[2].icon,
+    patient: patientNavItems[0].icon,
+    nurse: nurseNavItems[3].icon,
+    pharmacist: pharmacistNavItems[1].icon,
+    receptionist: receptionistNavItems[3].icon
 }
 
 const navItems = {
-    doctor: [
-        { icon: Home, label: 'Dashboard', route: '/' },
-        { icon: Users, label: 'Patients', route: '/patients' },
-        { icon: Stethoscope, label: 'Consultations', route: '/consultations' },
-        { icon: Clipboard, label: 'Medical Records', route: '/records' },
-        { icon: Calendar, label: 'Appointments', route: '/appointments' },
-        { icon: PieChart, label: 'Analytics', route: '/analytics' },
-    ],
-    patient: [
-        { icon: Home, label: 'My Health', route: '/' },
-        { icon: Calendar, label: 'Appointments', route: '/appointments' },
-        { icon: Clipboard, label: 'Medical History', route: '/history' },
-        { icon: Stethoscope, label: 'Consultations', route: '/consultations' },
-        { icon: Activity, label: 'Health Resources', route: '/resources' },
-    ],
-    nurse: [
-        { icon: Home, label: 'Dashboard', route: '/' },
-        { icon: Users, label: 'Patients', route: '/patients' },
-        { icon: Calendar, label: 'Schedules', route: '/schedules' },
-        { icon: Clipboard, label: 'Patient Care', route: '/care' },
-        { icon: Activity, label: 'Vitals Log', route: '/vitals' },
-    ]
+    doctor: doctorNavItems,
+    patient: patientNavItems,
+    nurse: nurseNavItems,
+    pharmacist: pharmacistNavItems,
+    receptionist: receptionistNavItems
 }
 
 const roleColors = {
     doctor: 'border-black-500 text-blue-950',
     patient: 'border-black-500 text-green-950',
-    nurse: 'border-black-500 text-purple-950'
+    nurse: 'border-black-500 text-purple-950',
+    pharmacist: 'border-black-500 text-orange-950',
+    receptionist: 'border-black-500 text-teal-950'
 }
 
 export default function Navbar({ name, role, online, isMobile }: Readonly<NavbarProps>) {
