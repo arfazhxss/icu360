@@ -1,3 +1,5 @@
+// src/app/dashboard/page.tsx
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -25,6 +27,7 @@ function MainContent({ role }: { role: 'doctor' | 'patient' | 'nurse' | 'recepti
 
 export default function Overview() {
     const { role } = useRole();
+    // const { triageData } = useTriageContext(); // Add this line
     const [isNavbarVisible, setIsNavbarVisible] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 

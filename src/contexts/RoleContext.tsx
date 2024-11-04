@@ -3,7 +3,7 @@
 "use client"
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
-type Role = 'doctor' | 'patient' | 'nurse';
+type Role = 'doctor' | 'patient' | 'nurse' | 'pharmacist' | 'receptionist';
 
 interface RoleContextType {
     role: Role | null;

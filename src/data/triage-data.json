@@ -1,0 +1,42 @@
+[
+  {
+    "patientName": "test1",
+    "age": "30",
+    "gender": "male",
+    "symptoms": [
+      "Cough"
+    ],
+    "painLevel": "10",
+    "duration": "30",
+    "medicalHistory": [
+      "Heart Disease"
+    ],
+    "additionalNotes": "212",
+    "severity": "Low",
+    "triageStatus": "Completed",
+    "id": "1730758397868",
+    "nurseNotes": "asasa",
+    "appointmentTime": "2024-11-05T01:19",
+    "doctorNotes": "asa",
+    "prescription": "sasas",
+    "pharmacistNotes": "sss"
+  },
+  {
+    "patientName": "test2",
+    "age": "20",
+    "gender": "female",
+    "symptoms": [
+      "Sore throat",
+      "Shortness of breath"
+    ],
+    "painLevel": "10",
+    "duration": "100",
+    "medicalHistory": [
+      "Diabetes"
+    ],
+    "additionalNotes": "2",
+    "severity": "Low",
+    "triageStatus": "Pending",
+    "id": "1730759230738"
+  }
+]

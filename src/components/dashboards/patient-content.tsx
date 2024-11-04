@@ -1,8 +1,14 @@
+// src/components/dashboards/patient-content.tsx
+
+'use client'
+
 import { SingleCard } from '@/components/shared-components'
 import { Home, Calendar, Clipboard, Stethoscope, Activity, AlertTriangle } from "lucide-react"
 import { VirtualTriage } from '@/components/virtual-triage'
 import { Button } from "@/components/ui/button"
 import { useState } from 'react'
+import { useTriageContext } from '@/contexts/TriageContext'
+import { TriageData } from '@/utils/types'
 
 export const patientNavItems = [
     { icon: Home, label: 'My Health', route: '/' },
@@ -15,6 +21,15 @@ export const patientNavItems = [
 
 export function PatientContent() {
     const [showTriage, setShowTriage] = useState(false)
+    const { triageData, addTriageData } = useTriageContext()
+
+    // In a real application, you would use the actual patient's name or ID
+    const patientTriages = triageData.filter(triage => triage.patientName === "Current Patient Name")
+
+    const handleTriageSubmit = async (triageData: Omit<TriageData, 'id'>) => {
+        await addTriageData(triageData)
+        setShowTriage(false)
+    }
 
     return (
         <>
@@ -40,13 +55,23 @@ export function PatientContent() {
                 />
             </div>
             <div className="mt-8">
+                <h3 className="text-xl font-semibold mb-4">Your Triage Status</h3>
+                {patientTriages.map((triage) => (
+                    <div key={triage.id} className="mb-4 p-4 border rounded">
+                        <p>Status: {triage.triageStatus}</p>
+                        {triage.appointmentTime && <p>Appointment: {triage.appointmentTime}</p>}
+                        {triage.prescription && <p>Prescription: {triage.prescription}</p>}
+                    </div>
+                ))}
+            </div>
+            <div className="mt-8">
                 <h3 className="text-xl font-semibold mb-4">Need Immediate Care?</h3>
                 <Button onClick={() => setShowTriage(!showTriage)}>
                     {showTriage ? 'Hide Virtual Triage' : 'Start Virtual Triage'}
                 </Button>
                 {showTriage && (
                     <div className="mt-4">
-                        <VirtualTriage />
+                        <VirtualTriage onSubmit={handleTriageSubmit} />
                     </div>
                 )}
             </div>

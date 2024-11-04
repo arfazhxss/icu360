@@ -1,0 +1,57 @@
+[
+  {
+    "patientName": "John Doe",
+    "age": "50",
+    "gender": "Male",
+    "symptoms": [
+      "sad",
+      "angry",
+      "constipated"
+    ],
+    "painLevel": "Medium",
+    "duration": "dsds",
+    "medicalHistory": [
+      "das"
+    ],
+    "additionalNotes": "asd",
+    "severity": "Medium",
+    "triageStatus": "Pending",
+    "id": "1730730138402"
+  },
+  {
+    "patientName": "John Doe",
+    "age": "50",
+    "gender": "Male",
+    "symptoms": [
+      "sad",
+      "angry",
+      "constipated"
+    ],
+    "painLevel": "Medium",
+    "duration": "dsds",
+    "medicalHistory": [
+      "das"
+    ],
+    "additionalNotes": "asd",
+    "severity": "Medium",
+    "triageStatus": "Pending",
+    "id": "1730730138402"
+  },
+  {
+    "patientName": "asa",
+    "age": "232",
+    "gender": "232",
+    "symptoms": [
+      "23e2"
+    ],
+    "painLevel": "Medium",
+    "duration": "dasd",
+    "medicalHistory": [
+      "asda"
+    ],
+    "additionalNotes": "dasd",
+    "severity": "Medium",
+    "triageStatus": "Pending",
+    "id": "1730730401271"
+  }
+]

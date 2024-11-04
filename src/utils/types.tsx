@@ -1,3 +1,5 @@
+// src/utils/types.tsx
+
 export type AccessLog = {
     visitID: string;
     clinicID: string;
@@ -64,3 +66,22 @@ export type PatientRecord = {
     };
     accessLogs: Array<AccessLog>;
 };
+
+export interface TriageData {
+    id: string;
+    patientName: string;
+    age: string;
+    gender: string;
+    symptoms: string[];
+    painLevel: string;
+    duration: string;
+    medicalHistory: string[];
+    additionalNotes: string;
+    severity: 'Low' | 'Medium' | 'High';
+    triageStatus: 'Pending' | 'Nurse Review' | 'Receptionist Review' | 'Doctor Review' | 'Pharmacist Review' | 'Completed';
+    nurseNotes?: string;
+    doctorNotes?: string;
+    prescription?: string;
+    appointmentTime?: string;
+    pharmacistNotes?: string;
+}

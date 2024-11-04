@@ -1,3 +1,5 @@
+// src/components/shared-components.tsx
+
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 

@@ -1,6 +1,8 @@
+// src/components/navbar.tsx
+
 'use client'
 
-import { useState } from 'react'
+import React, { forwardRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -48,12 +50,31 @@ const roleColors = {
     receptionist: 'border-black-500 text-teal-950'
 }
 
-export default function Navbar({ name, role, online, isMobile }: Readonly<NavbarProps>) {
+const NavbarButton = forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<typeof Button>>((props, ref) => (
+    <Button ref={ref} {...props} />
+))
+NavbarButton.displayName = 'NavbarButton'
+
+const TooltipButton = forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<typeof Button> & { tooltip: string }>(
+    ({ tooltip, ...props }, ref) => (
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <NavbarButton ref={ref} {...props} />
+            </TooltipTrigger>
+            <TooltipContent side="right">
+                {tooltip}
+            </TooltipContent>
+        </Tooltip>
+    )
+)
+TooltipButton.displayName = 'TooltipButton'
+
+export default function Navbar({ name, role, online, isMobile }: NavbarProps) {
     const router = useRouter()
-    const [activeTab, setActiveTab] = useState(role === 'patient' ? 'My Health' : 'Dashboard')
-    const [darkMode, setDarkMode] = useState(false)
-    const [notifications, setNotifications] = useState(true)
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+    const [activeTab, setActiveTab] = React.useState(role === 'patient' ? 'My Health' : 'Dashboard')
+    const [darkMode, setDarkMode] = React.useState(false)
+    const [notifications, setNotifications] = React.useState(true)
+    const [isSettingsOpen, setIsSettingsOpen] = React.useState(false)
 
     const handleTabChange = (newTab: string, route: string) => {
         setActiveTab(newTab)
@@ -93,24 +114,19 @@ export default function Navbar({ name, role, online, isMobile }: Readonly<Navbar
                 <ScrollArea className="flex-grow">
                     <nav className="space-y-1">
                         {navItems[role].map((item) => (
-                            <Tooltip key={item.label} delayDuration={150}>
-                                <TooltipTrigger asChild>
-                                    <Button
-                                        variant={activeTab === item.label ? "secondary" : "ghost"}
-                                        className={`w-full justify-start ${activeTab === item.label
-                                            ? 'hover:bg-zinc-200 hover:text-secondary-foreground'
-                                            : 'hover:bg-black/5 hover:text-secondary-foreground'
-                                            } transition-all duration-200`}
-                                        onClick={() => handleTabChange(item.label, item.route)}
-                                    >
-                                        <item.icon className={`${isMobile ? 'mr-0' : 'mr-2'} h-4 w-4`} />
-                                        {!isMobile && <span>{item.label}</span>}
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent side="right">
-                                    {item.label}
-                                </TooltipContent>
-                            </Tooltip>
+                            <TooltipButton
+                                key={item.label}
+                                variant={activeTab === item.label ? "secondary" : "ghost"}
+                                className={`w-full justify-start ${activeTab === item.label
+                                    ? 'hover:bg-zinc-200 hover:text-secondary-foreground'
+                                    : 'hover:bg-black/5 hover:text-secondary-foreground'
+                                    } transition-all duration-200`}
+                                onClick={() => handleTabChange(item.label, item.route)}
+                                tooltip={item.label}
+                            >
+                                <item.icon className={`${isMobile ? 'mr-0' : 'mr-2'} h-4 w-4`} />
+                                {!isMobile && <span>{item.label}</span>}
+                            </TooltipButton>
                         ))}
                     </nav>
                 </ScrollArea>
@@ -118,21 +134,15 @@ export default function Navbar({ name, role, online, isMobile }: Readonly<Navbar
                 <div className="mt-auto space-y-1">
                     <Sheet open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
                         <SheetTrigger asChild>
-                            <Tooltip delayDuration={300}>
-                                <TooltipTrigger asChild>
-                                    <Button
-                                        variant="ghost"
-                                        className="w-full justify-start hover:bg-black/5 hover:text-secondary-foreground"
-                                    >
-                                        <Settings className={`${isMobile ? 'mr-0' : 'mr-2'} h-4 w-4`} />
-                                        {!isMobile && <span>Settings</span>}
-                                        {!isMobile && <ChevronRight className="ml-auto h-4 w-4" />}
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent side="right">
-                                    Settings
-                                </TooltipContent>
-                            </Tooltip>
+                            <TooltipButton
+                                variant="ghost"
+                                className="w-full justify-start hover:bg-black/5 hover:text-secondary-foreground"
+                                tooltip="Settings"
+                            >
+                                <Settings className={`${isMobile ? 'mr-0' : 'mr-2'} h-4 w-4`} />
+                                {!isMobile && <span>Settings</span>}
+                                {!isMobile && <ChevronRight className="ml-auto h-4 w-4" />}
+                            </TooltipButton>
                         </SheetTrigger>
                         <SheetContent>
                             <SheetHeader>
@@ -158,20 +168,14 @@ export default function Navbar({ name, role, online, isMobile }: Readonly<Navbar
                             </div>
                         </SheetContent>
                     </Sheet>
-                    <Tooltip delayDuration={300}>
-                        <TooltipTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                className="w-full justify-start hover:bg-black/5 hover:text-secondary-foreground"
-                            >
-                                <HelpCircle className={`${isMobile ? 'mr-0' : 'mr-2'} h-4 w-4`} />
-                                {!isMobile && <span>Help</span>}
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="right">
-                            Help
-                        </TooltipContent>
-                    </Tooltip>
+                    <TooltipButton
+                        variant="ghost"
+                        className="w-full justify-start hover:bg-black/5 hover:text-secondary-foreground"
+                        tooltip="Help"
+                    >
+                        <HelpCircle className={`${isMobile ? 'mr-0' : 'mr-2'} h-4 w-4`} />
+                        {!isMobile && <span>Help</span>}
+                    </TooltipButton>
                 </div>
             </div>
         </TooltipProvider>

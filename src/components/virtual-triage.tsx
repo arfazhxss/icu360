@@ -1,100 +1,174 @@
+// src/components/virtual-triage.tsx
+
 'use client'
 
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Checkbox } from "@/components/ui/checkbox"
+import { TriageData } from '@/utils/types'
 
-export function VirtualTriage() {
-  const [step, setStep] = useState(1)
-  const [triageResult, setTriageResult] = useState<string | null>(null)
+interface VirtualTriageProps {
+  onSubmit: (triageData: Omit<TriageData, 'id'>) => Promise<void>;
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
+export function VirtualTriage({ onSubmit }: VirtualTriageProps) {
+  const [formData, setFormData] = useState<Omit<TriageData, 'id'>>({
+    patientName: '',
+    age: '',
+    gender: '',
+    symptoms: [],
+    painLevel: '',
+    duration: '',
+    medicalHistory: [],
+    additionalNotes: '',
+    severity: 'Low',
+    triageStatus: 'Pending'
+  })
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleCheckboxChange = (symptom: string) => {
+    setFormData(prev => ({
+      ...prev,
+      symptoms: prev.symptoms.includes(symptom)
+        ? prev.symptoms.filter(s => s !== symptom)
+        : [...prev.symptoms, symptom]
+    }))
+  }
+
+  const handleMedicalHistoryChange = (condition: string) => {
+    setFormData(prev => ({
+      ...prev,
+      medicalHistory: prev.medicalHistory.includes(condition)
+        ? prev.medicalHistory.filter(c => c !== condition)
+        : [...prev.medicalHistory, condition]
+    }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // In a real application, this would involve more complex logic and potentially API calls
-    const randomResult = Math.random()
-    if (randomResult < 0.3) {
-      setTriageResult("Please visit the Emergency Department immediately.")
-    } else if (randomResult < 0.6) {
-      setTriageResult("We recommend you visit your GP or a walk-in clinic.")
-    } else {
-      setTriageResult("Based on your symptoms, you can safely manage your condition at home. If symptoms worsen, please reassess.")
-    }
-    setStep(3)
+    await onSubmit(formData)
+    // Reset form or show confirmation message
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Virtual Triage</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {step === 1 && (
-          <div className="space-y-4">
-            <p>Welcome to the virtual triage system. This will help determine the best course of action for your current health concerns.</p>
-            <Button onClick={() => setStep(2)}>Start Triage</Button>
-          </div>
-        )}
-        {step === 2 && (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="symptoms">Describe your symptoms</Label>
-              <Textarea id="symptoms" placeholder="Enter your symptoms here" required />
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div>
+        <Label htmlFor="patientName">Full Name</Label>
+        <Input
+          id="patientName"
+          name="patientName"
+          value={formData.patientName}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="age">Age</Label>
+          <Input
+            id="age"
+            name="age"
+            type="number"
+            value={formData.age}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div>
+          <Label>Gender</Label>
+          <RadioGroup
+            name="gender"
+            value={formData.gender}
+            onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value }))}
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="male" id="male" />
+              <Label htmlFor="male">Male</Label>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="pain-level">Pain Level (1-10)</Label>
-              <Input type="number" id="pain-level" min="1" max="10" required />
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="female" id="female" />
+              <Label htmlFor="female">Female</Label>
             </div>
-            <div className="space-y-2">
-              <Label>How long have you been experiencing these symptoms?</Label>
-              <Select required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select duration" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="less-than-24h">Less than 24 hours</SelectItem>
-                  <SelectItem value="1-3-days">1-3 days</SelectItem>
-                  <SelectItem value="3-7-days">3-7 days</SelectItem>
-                  <SelectItem value="more-than-week">More than a week</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="other" id="other" />
+              <Label htmlFor="other">Other</Label>
             </div>
-            <div className="space-y-2">
-              <Label>Are you experiencing any of the following?</Label>
-              <RadioGroup defaultValue="none">
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="chest-pain" id="chest-pain" />
-                  <Label htmlFor="chest-pain">Chest Pain</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="difficulty-breathing" id="difficulty-breathing" />
-                  <Label htmlFor="difficulty-breathing">Difficulty Breathing</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="severe-bleeding" id="severe-bleeding" />
-                  <Label htmlFor="severe-bleeding">Severe Bleeding</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="none" id="none" />
-                  <Label htmlFor="none">None of the above</Label>
-                </div>
-              </RadioGroup>
+          </RadioGroup>
+        </div>
+      </div>
+      <div>
+        <Label>Symptoms (Check all that apply)</Label>
+        <div className="grid grid-cols-2 gap-2">
+          {['Fever', 'Cough', 'Shortness of breath', 'Fatigue', 'Body aches', 'Headache', 'Loss of taste/smell', 'Sore throat'].map((symptom) => (
+            <div key={symptom} className="flex items-center space-x-2">
+              <Checkbox
+                id={symptom}
+                checked={formData.symptoms.includes(symptom)}
+                onCheckedChange={() => handleCheckboxChange(symptom)}
+              />
+              <Label htmlFor={symptom}>{symptom}</Label>
             </div>
-            <Button type="submit">Submit</Button>
-          </form>
-        )}
-        {step === 3 && triageResult && (
-          <div className="space-y-4">
-            <p className="font-bold">Triage Result:</p>
-            <p>{triageResult}</p>
-            <Button onClick={() => setStep(1)}>Start New Triage</Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          ))}
+        </div>
+      </div>
+      <div>
+        <Label htmlFor="painLevel">Pain Level (1-10)</Label>
+        <Input
+          id="painLevel"
+          name="painLevel"
+          type="number"
+          min="1"
+          max="10"
+          value={formData.painLevel}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="duration">Duration of Symptoms</Label>
+        <Input
+          id="duration"
+          name="duration"
+          placeholder="e.g., 2 days, 1 week"
+          value={formData.duration}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+      <div>
+        <Label>Medical History</Label>
+        <div className="grid grid-cols-2 gap-2">
+          {['Diabetes', 'Hypertension', 'Heart Disease', 'Asthma', 'Cancer', 'Immunocompromised'].map((condition) => (
+            <div key={condition} className="flex items-center space-x-2">
+              <Checkbox
+                id={condition}
+                checked={formData.medicalHistory.includes(condition)}
+                onCheckedChange={() => handleMedicalHistoryChange(condition)}
+              />
+              <Label htmlFor={condition}>{condition}</Label>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <Label htmlFor="additionalNotes">Additional Notes</Label>
+        <Textarea
+          id="additionalNotes"
+          name="additionalNotes"
+          value={formData.additionalNotes}
+          onChange={handleInputChange}
+          placeholder="Any other information you'd like to provide..."
+        />
+      </div>
+      <Button type="submit">Submit Triage</Button>
+    </form>
   )
 }
