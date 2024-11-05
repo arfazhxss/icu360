@@ -1,0 +1,1 @@
+export default function MedicalHistoryPage() { return (<div className="p-6"><h1 className="text-2xl font-bold mb-4">Medical History</h1><p>Access your medical history and past treatments.</p></div>); }

@@ -1,0 +1,255 @@
+{
+  "users": [
+    {
+      "id": "doctor01",
+      "name": "Dr. Smith",
+      "role": "doctor",
+      "username": "doctor",
+      "password": "admin"
+    },
+    {
+      "id": "nurse01",
+      "name": "Nurse Johnson",
+      "role": "nurse",
+      "username": "nurse",
+      "password": "admin"
+    },
+    {
+      "id": "receptionist01",
+      "name": "Alice Brown",
+      "role": "receptionist",
+      "username": "receptionist",
+      "password": "admin"
+    },
+    {
+      "id": "pharmacist01",
+      "name": "Bob Green",
+      "role": "pharmacist",
+      "username": "pharmacist",
+      "password": "admin"
+    }
+  ],
+  "patients": [
+    {
+      "id": "patient1",
+      "name": "patient0",
+      "role": "patient",
+      "username": "patient0",
+      "password": "patient",
+      "email": "patient@patient.ca",
+      "triageData": [
+        {
+          "patientName": "test1",
+          "age": "20",
+          "gender": "female",
+          "symptoms": [
+            "Sore throat"
+          ],
+          "painLevel": "2",
+          "duration": "50",
+          "medicalHistory": [
+            "Diabetes"
+          ],
+          "additionalNotes": "",
+          "severity": "Low",
+          "triageStatus": "Completed",
+          "patientId": "patient1",
+          "id": "1730769611299",
+          "nurseNotes": "yada yada",
+          "appointmentTime": "2024-11-05T04:48",
+          "doctorNotes": "",
+          "prescription": "",
+          "pharmacistNotes": "vsdbfhjksdbfvhdsbfjvs AAAAA"
+        },
+        {
+          "patientId": "patient1",
+          "patientName": "Dasjdakjsnd",
+          "age": "2323",
+          "gender": "female",
+          "symptoms": [
+            "Sore throat",
+            "Loss of taste/smell",
+            "Body aches",
+            "Shortness of breath",
+            "Fever",
+            "Cough"
+          ],
+          "painLevel": "10",
+          "duration": "787",
+          "medicalHistory": [
+            "Diabetes",
+            "Cancer",
+            "Hypertension",
+            "Asthma"
+          ],
+          "additionalNotes": "2323",
+          "severity": "Low",
+          "triageStatus": "Completed",
+          "id": "1730782608917",
+          "nurseNotes": "this is nothing sdsjdfsdf",
+          "appointmentTime": "2024-11-05T07:58",
+          "doctorNotes": "s",
+          "prescription": "c",
+          "pharmacistNotes": ""
+        },
+        {
+          "patientId": "patient1",
+          "patientName": "Arafa",
+          "age": "20",
+          "gender": "male",
+          "symptoms": [
+            "Fever",
+            "Body aches",
+            "Fatigue"
+          ],
+          "painLevel": "9",
+          "duration": "20",
+          "medicalHistory": [
+            "Diabetes",
+            "Asthma"
+          ],
+          "additionalNotes": "",
+          "severity": "Low",
+          "triageStatus": "Doctor Review",
+          "id": "1730784987645",
+          "nurseNotes": "aa",
+          "appointmentTime": "2024-11-05T09:49"
+        },
+        {
+          "patientId": "patient1",
+          "patientName": "example2",
+          "age": "40",
+          "gender": "female",
+          "symptoms": [
+            "Cough",
+            "Fatigue",
+            "Sore throat",
+            "Loss of taste/smell",
+            "Shortness of breath"
+          ],
+          "painLevel": "5",
+          "duration": "1 day",
+          "medicalHistory": [
+            "Diabetes",
+            "Heart Disease"
+          ],
+          "additionalNotes": "wwqwq",
+          "severity": "Low",
+          "triageStatus": "Doctor Review",
+          "id": "1730789094260",
+          "nurseNotes": "bb",
+          "appointmentTime": "2024-11-05T09:50"
+        },
+        {
+          "patientId": "patient1",
+          "patientName": "test1",
+          "age": "23",
+          "gender": "male",
+          "symptoms": [
+            "Cough",
+            "Headache",
+            "Sore throat",
+            "Loss of taste/smell",
+            "Body aches"
+          ],
+          "painLevel": "4",
+          "duration": "2",
+          "medicalHistory": [
+            "Diabetes",
+            "Heart Disease",
+            "Cancer"
+          ],
+          "additionalNotes": "1",
+          "severity": "Low",
+          "triageStatus": "Pending",
+          "id": "1730797488399"
+        }
+      ]
+    },
+    {
+      "id": "patient2",
+      "name": "anonymous1",
+      "role": "patient",
+      "username": "anonymous1",
+      "password": "patient",
+      "email": "anon@aasa.ca",
+      "triageData": [
+        {
+          "patientId": "patient2",
+          "patientName": "tew",
+          "age": "32",
+          "gender": "male",
+          "symptoms": [
+            "Cough"
+          ],
+          "painLevel": "10",
+          "duration": "2",
+          "medicalHistory": [
+            "Diabetes"
+          ],
+          "additionalNotes": "21",
+          "severity": "Low",
+          "triageStatus": "Doctor Review",
+          "id": "1730771932077",
+          "nurseNotes": "bada bada",
+          "appointmentTime": "2024-11-05T05:00"
+        },
+        {
+          "patientId": "patient2",
+          "patientName": "adas",
+          "age": "23",
+          "gender": "male",
+          "symptoms": [
+            "Shortness of breath"
+          ],
+          "painLevel": "10",
+          "duration": "10",
+          "medicalHistory": [
+            "Diabetes"
+          ],
+          "additionalNotes": "",
+          "severity": "Low",
+          "triageStatus": "Completed",
+          "id": "1730773126505",
+          "nurseNotes": "this is a test 777",
+          "appointmentTime": "2024-11-05T07:58",
+          "doctorNotes": "asasda",
+          "prescription": "ashma ths patient needs to die",
+          "pharmacistNotes": "okay im giving him poison"
+        },
+        {
+          "patientId": "patient2",
+          "patientName": "asdasd",
+          "age": "232",
+          "gender": "",
+          "symptoms": [
+            "Shortness of breath",
+            "Headache",
+            "Sore throat"
+          ],
+          "painLevel": "2",
+          "duration": "4",
+          "medicalHistory": [
+            "Diabetes",
+            "Heart Disease",
+            "Cancer"
+          ],
+          "additionalNotes": "4",
+          "severity": "Low",
+          "triageStatus": "Doctor Review",
+          "id": "1730773587268",
+          "nurseNotes": "this is a test 1",
+          "appointmentTime": "2024-11-05T07:58"
+        }
+      ]
+    },
+    {
+      "id": "patient3",
+      "name": "arfazh",
+      "role": "patient",
+      "username": "arfazh",
+      "password": "admin",
+      "email": "metal5@arfazhxss.ca"
+    }
+  ]
+}

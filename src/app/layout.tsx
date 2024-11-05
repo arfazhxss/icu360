@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { RoleProvider } from "@/contexts/RoleContext";
+import { TriageProvider } from '@/contexts/TriageContext'
 import "./globals.css";
 
 const geistSans = localFont({
@@ -30,7 +31,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <RoleProvider>
-          {children}
+          <TriageProvider>
+            {children}
+          </TriageProvider>
         </RoleProvider>
       </body>
     </html>

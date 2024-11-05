@@ -1,21 +1,59 @@
 // src/contexts/RoleContext.tsx
 
 "use client"
-import React, { createContext, useState, useContext, ReactNode } from 'react';
 
-type Role = 'doctor' | 'patient' | 'nurse';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
+type Role = 'doctor' | 'patient' | 'nurse' | 'pharmacist' | 'receptionist' | null;
+
+interface User {
+    id: string;
+    name: string;
+    role: Role;
+    username: string;
+}
 
 interface RoleContextType {
-    role: Role | null;
+    role: Role;
     setRole: (role: Role) => void;
+    user: User | null;
+    setUser: (user: User | null) => void;
+    signOut: () => Promise<void>;
 }
 
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export function RoleProvider({ children }: Readonly<{ children: ReactNode }>) {
-    const [role, setRole] = useState<Role | null>(null);
+    const [role, setRole] = useState<Role>(null);
+    const [user, setUser] = useState<User | null>(null);
+    const router = useRouter();
 
-    const value = React.useMemo(() => ({ role, setRole }), [role, setRole]);
+    useEffect(() => {
+        const checkSession = async () => {
+            const response = await fetch('/api/auth/session');
+            if (response.ok) {
+                const session = await response.json();
+                if (session) {
+                    setUser(session);
+                    setRole(session.role as Role);
+                }
+            }
+        };
+
+        checkSession();
+    }, []);
+
+    const signOut = React.useCallback(async () => {
+        const response = await fetch('/api/auth/signout', { method: 'POST' });
+        if (response.ok) {
+            setUser(null);
+            setRole(null);
+            router.push('/account/login');
+        }
+    }, [router]);
+
+    const value = React.useMemo(() => ({ role, setRole, user, setUser, signOut }), [role, user, signOut]);
 
     return (
         <RoleContext.Provider value={value}>
