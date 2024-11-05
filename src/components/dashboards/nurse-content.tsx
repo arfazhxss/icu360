@@ -13,16 +13,16 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 export const nurseNavItems = [
-    { icon: Home, label: 'Dashboard', route: '/' },
-    { icon: Users, label: 'Patients', route: '/patients' },
-    { icon: Calendar, label: 'Schedules', route: '/schedules' },
-    { icon: Clipboard, label: 'Patient Care', route: '/care' },
-    { icon: Activity, label: 'Vitals Log', route: '/vitals' },
+    { icon: Home, label: 'Dashboard', route: '/dashboard' },
+    { icon: Users, label: 'Patients', route: '/dashboard/patients' },
+    { icon: Calendar, label: 'Schedules', route: '/dashboard/schedules' },
+    { icon: Clipboard, label: 'Patient Care', route: '/dashboard/care' },
+    { icon: Activity, label: 'Vitals Log', route: '/dashboard/vitals' },
 ]
 
 export function NurseContent() {
     const { triageData, updateTriageData, deleteTriageData, refetchTriageData } = useTriageContext()
-    const [selectedTriage, setSelectedTriage] = useState<string | null>(null)
+    const [selectedTriage, setSelectedTriage] = useState<{ id: string, patientId: string } | null>(null)
     const [nurseNotes, setNurseNotes] = useState('')
 
     useEffect(() => {
@@ -33,14 +33,14 @@ export function NurseContent() {
         triage.triageStatus === 'Nurse Review' || triage.triageStatus === 'Pending'
     )
 
-    const openNurseReview = (id: string) => {
-        setSelectedTriage(id)
+    const openNurseReview = (id: string, patientId: string) => {
+        setSelectedTriage({ id, patientId })
         setNurseNotes('')
     }
 
     const submitNurseReview = async () => {
         if (selectedTriage) {
-            await updateTriageData(selectedTriage, {
+            await updateTriageData(selectedTriage.id, selectedTriage.patientId, {
                 triageStatus: 'Receptionist Review',
                 nurseNotes: nurseNotes
             })
@@ -49,8 +49,8 @@ export function NurseContent() {
         }
     }
 
-    const handleDelete = async (id: string) => {
-        await deleteTriageData(id)
+    const handleDelete = async (id: string, patientId: string) => {
+        await deleteTriageData(id, patientId)
         await refetchTriageData()
     }
 
@@ -99,8 +99,8 @@ export function NurseContent() {
                                 <TableCell>{triage.severity}</TableCell>
                                 <TableCell>{triage.triageStatus}</TableCell>
                                 <TableCell>
-                                    <Button onClick={() => openNurseReview(triage.id)}>Review</Button>
-                                    <Button variant="destructive" onClick={() => handleDelete(triage.id)} className="ml-2">Delete</Button>
+                                    <Button onClick={() => openNurseReview(triage.id, triage.patientId)}>Review</Button>
+                                    <Button variant="destructive" onClick={() => handleDelete(triage.id, triage.patientId)} className="ml-2">Delete</Button>
                                 </TableCell>
                             </TableRow>
                         ))}

@@ -9,11 +9,11 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 export const pharmacistNavItems = [
-    { icon: Home, label: 'Dashboard', route: '/' },
-    { icon: Pill, label: 'Prescriptions', route: '/prescriptions' },
-    { icon: Clipboard, label: 'Inventory', route: '/inventory' },
-    { icon: Users, label: 'Patients', route: '/patients' },
-    { icon: Calendar, label: 'Consultations', route: '/consultations' },
+    { icon: Home, label: 'Dashboard', route: '/dashboard' },
+    { icon: Pill, label: 'Prescriptions', route: '/dashboard/prescriptions' },
+    { icon: Clipboard, label: 'Inventory', route: '/dashboard/inventory' },
+    { icon: Users, label: 'Patients', route: '/dashboard/patients' },
+    { icon: Calendar, label: 'Consultations', route: '/dashboard/consultations' },
 ]
 
 export function PharmacistContent() {
@@ -30,13 +30,22 @@ export function PharmacistContent() {
 
     const submitPrescriptionReview = () => {
         if (selectedPrescription) {
-            updateTriageData(selectedPrescription, {
-                triageStatus: 'Completed',
-                pharmacistNotes: pharmacistNotes
-            })
-            setSelectedPrescription(null)
+            const triageToUpdate = pharmacistReviewTriages.find(triage => triage.id === selectedPrescription);
+            if (triageToUpdate) {
+                updateTriageData(selectedPrescription, triageToUpdate.patientId, {
+                    triageStatus: 'Completed',
+                    pharmacistNotes: pharmacistNotes
+                })
+                    .then(() => {
+                        setSelectedPrescription(null);
+                    })
+                    .catch(error => {
+                        console.error('Error updating triage data:', error);
+                        // Handle the error (e.g., show an error message to the user)
+                    });
+            }
         }
-    }
+    };
 
     return (
         <>

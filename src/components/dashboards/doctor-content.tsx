@@ -12,11 +12,11 @@ import { Textarea } from "@/components/ui/textarea"
 
 export const doctorNavItems = [
     { icon: Home, label: 'Dashboard', route: '/' },
-    { icon: Users, label: 'Patients', route: '/patients' },
-    { icon: Stethoscope, label: 'Consultations', route: '/consultations' },
-    { icon: Clipboard, label: 'Medical Records', route: '/records' },
-    { icon: Calendar, label: 'Appointments', route: '/appointments' },
-    { icon: PieChart, label: 'Analytics', route: '/analytics' },
+    { icon: Users, label: 'Patients', route: '/dashboard/patients' },
+    { icon: Stethoscope, label: 'Consultations', route: '/dashboard/consultations' },
+    { icon: Clipboard, label: 'Medical Records', route: '/dashboard/records' },
+    { icon: Calendar, label: 'Appointments', route: '/dashboard/appointments' },
+    { icon: PieChart, label: 'Analytics', route: '/dashboard/analytics' },
 ]
 
 export function DoctorContent() {
@@ -35,14 +35,23 @@ export function DoctorContent() {
 
     const submitDoctorReview = () => {
         if (selectedTriage) {
-            updateTriageData(selectedTriage, {
-                triageStatus: 'Pharmacist Review',
-                doctorNotes: doctorNotes,
-                prescription: prescription
-            })
-            setSelectedTriage(null)
+            const triageToUpdate = doctorReviewTriages.find(triage => triage.id === selectedTriage);
+            if (triageToUpdate) {
+                updateTriageData(selectedTriage, triageToUpdate.patientId, {
+                    triageStatus: 'Pharmacist Review',
+                    doctorNotes: doctorNotes,
+                    prescription: prescription
+                })
+                    .then(() => {
+                        setSelectedTriage(null);
+                    })
+                    .catch(error => {
+                        // Handle the error (e.g., show an error message to the user)
+                        console.error('Error updating triage data:', error);
+                    });
+            }
         }
-    }
+    };
 
     return (
         <>
@@ -107,8 +116,7 @@ export function DoctorContent() {
                             <Textarea
                                 id="doctorNotes"
                                 value={doctorNotes}
-                                onChange={(e) =>
-                                    setDoctorNotes(e.target.value)}
+                                onChange={(e) => setDoctorNotes(e.target.value)}
                                 placeholder="Enter your diagnosis and treatment plan..."
                             />
                         </div>

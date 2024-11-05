@@ -5,134 +5,139 @@ import fs from 'fs/promises'
 import path from 'path'
 import { TriageData } from '@/utils/types'
 
-// Define the data directory and file path
-const DATA_DIR = path.join(process.cwd(), 'src', 'data')
-const dataFilePath = path.join(DATA_DIR, 'triage-data.json')
+const DATA_FILE = path.join(process.cwd(), 'src', 'data', 'triage-data.json')
 
-// Helper function to ensure data directory exists
-async function ensureDataDirectory(): Promise<void> {
-    try {
-        await fs.access(DATA_DIR)
-    } catch {
-        await fs.mkdir(DATA_DIR, { recursive: true })
-    }
+interface User {
+    id: string;
+    name: string;
+    role: string;
+    username: string;
+    password: string;
 }
 
-// Helper function to ensure JSON file exists with valid content
-async function ensureJsonFile(): Promise<void> {
-    try {
-        await fs.access(dataFilePath)
-    } catch {
-        await fs.writeFile(dataFilePath, '[]', 'utf8')
-    }
+interface Patient {
+    id: string;
+    name: string;
+    role: string;
+    username: string;
+    password: string;
+    email: string;
+    triageData: TriageData[];
 }
 
-// Helper function to read triage data
-async function readTriageData(): Promise<TriageData[]> {
-    await ensureDataDirectory()
-    await ensureJsonFile()
-    const jsonData = await fs.readFile(dataFilePath, 'utf8')
-    return JSON.parse(jsonData) as TriageData[]
+interface Data {
+    users: User[];
+    patients: Patient[];
 }
 
-// Helper function to write triage data
-async function writeTriageData(data: TriageData[]): Promise<void> {
-    await fs.writeFile(dataFilePath, JSON.stringify(data, null, 2), 'utf8')
+async function readData(): Promise<Data> {
+    const data = await fs.readFile(DATA_FILE, 'utf8')
+    return JSON.parse(data)
+}
+
+async function writeData(data: Data): Promise<void> {
+    await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), 'utf8')
 }
 
 export async function GET(): Promise<NextResponse> {
     try {
-        const data = await readTriageData()
-        return NextResponse.json(data)
+        const data = await readData()
+        const allTriageData = data.patients.flatMap(patient => patient.triageData)
+        return NextResponse.json(allTriageData)
     } catch (error) {
         console.error('Error reading triage data:', error)
-        return NextResponse.json([], { status: 200 }) // Return empty array instead of 500
+        return NextResponse.json([], { status: 200 })
     }
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
         const newData = await request.json() as TriageData
-        console.log('Received data:', newData)
+        const data = await readData()
 
-        const existingData = await readTriageData()
-
-        // Check if the item with the same ID already exists
-        const existingIndex = existingData.findIndex((item: TriageData) => item.id === newData.id)
-
-        if (existingIndex !== -1) {
-            // If it exists, update the existing item
-            existingData[existingIndex] = { ...existingData[existingIndex], ...newData }
-        } else {
-            // If it doesn't exist, add the new item
-            existingData.push(newData)
+        const patientIndex = data.patients.findIndex(p => p.id === newData.patientId)
+        if (patientIndex === -1) {
+            return NextResponse.json({ error: 'Patient not found' }, { status: 404 })
         }
 
-        await writeTriageData(existingData)
+        // Initialize triageData array if it doesn't exist
+        if (!data.patients[patientIndex].triageData) {
+            data.patients[patientIndex].triageData = []
+        }
+
+        data.patients[patientIndex].triageData.push(newData)
+        await writeData(data)
 
         return NextResponse.json({
-            message: 'Triage data added/updated successfully',
-            data: existingData
+            message: 'Triage data added successfully',
+            data: newData
         })
     } catch (error) {
-        console.error('Error adding/updating triage data:', error)
+        console.error('Error adding triage data:', error)
         return NextResponse.json({
-            message: 'Error adding/updating triage data',
+            message: 'Error adding triage data',
             error: error instanceof Error ? error.message : 'Unknown error'
-        }, {
-            status: 500
-        })
+        }, { status: 500 })
     }
 }
 
 export async function PUT(request: NextRequest): Promise<NextResponse> {
     try {
-        const { id, ...updateData } = await request.json() as TriageData
-        console.log('Updating data for id:', id)
+        const { id, patientId, ...updateData } = await request.json() as TriageData & { patientId: string }
+        const data = await readData()
 
-        const existingData = await readTriageData()
-        const updatedData = existingData.map((item: TriageData) =>
-            item.id === id ? { ...item, ...updateData } : item
-        )
+        const patientIndex = data.patients.findIndex(p => p.id === patientId)
+        if (patientIndex === -1) {
+            return NextResponse.json({ error: 'Patient not found' }, { status: 404 })
+        }
 
-        await writeTriageData(updatedData)
+        const triageIndex = data.patients[patientIndex].triageData.findIndex(t => t.id === id)
+        if (triageIndex === -1) {
+            return NextResponse.json({ error: 'Triage data not found' }, { status: 404 })
+        }
+
+        data.patients[patientIndex].triageData[triageIndex] = {
+            ...data.patients[patientIndex].triageData[triageIndex],
+            ...updateData
+        }
+
+        await writeData(data)
 
         return NextResponse.json({
             message: 'Triage data updated successfully',
-            data: updatedData
+            data: data.patients[patientIndex].triageData[triageIndex]
         })
     } catch (error) {
         console.error('Error updating triage data:', error)
         return NextResponse.json({
             message: 'Error updating triage data',
             error: error instanceof Error ? error.message : 'Unknown error'
-        }, {
-            status: 500
-        })
+        }, { status: 500 })
     }
 }
 
 export async function DELETE(request: NextRequest): Promise<NextResponse> {
     try {
-        const { id } = await request.json() as { id: string }
-        console.log('Deleting data for id:', id)
+        const { id, patientId } = await request.json() as { id: string, patientId: string }
+        const data = await readData()
 
-        const existingData = await readTriageData()
-        const updatedData = existingData.filter((item: TriageData) => item.id !== id)
+        const patientIndex = data.patients.findIndex(p => p.id === patientId)
+        if (patientIndex === -1) {
+            return NextResponse.json({ error: 'Patient not found' }, { status: 404 })
+        }
 
-        await writeTriageData(updatedData)
+        data.patients[patientIndex].triageData = data.patients[patientIndex].triageData.filter(t => t.id !== id)
+        await writeData(data)
 
         return NextResponse.json({
             message: 'Triage data deleted successfully',
-            data: updatedData
+            data: data.patients[patientIndex].triageData
         })
     } catch (error) {
         console.error('Error deleting triage data:', error)
         return NextResponse.json({
             message: 'Error deleting triage data',
             error: error instanceof Error ? error.message : 'Unknown error'
-        }, {
-            status: 500
-        })
+        }, { status: 500 })
     }
 }

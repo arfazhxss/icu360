@@ -7,13 +7,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect } from 'react'
+import { toast } from "@/hooks/use-toast"
 
 export const receptionistNavItems = [
-    { icon: Home, label: 'Dashboard', route: '/' },
-    { icon: Calendar, label: 'Appointments', route: '/appointments' },
-    { icon: Users, label: 'Patients', route: '/patients' },
-    { icon: PhoneCall, label: 'Calls', route: '/calls' },
-    { icon: Clipboard, label: 'Check-ins', route: '/check-ins' },
+    { icon: Home, label: 'Dashboard', route: '/dashboard' },
+    { icon: Calendar, label: 'Appointments', route: '/dashboard/appointments' },
+    { icon: Users, label: 'Patients', route: '/dashboard/patients' },
+    { icon: PhoneCall, label: 'Calls', route: '/dashboard/calls' },
+    { icon: Clipboard, label: 'Check-ins', route: '/dashboard/check-ins' },
 ]
 
 export function ReceptionistContent() {
@@ -40,12 +41,29 @@ export function ReceptionistContent() {
 
     const setAppointment = async () => {
         if (selectedTriage && appointmentTime) {
-            await updateTriageData(selectedTriage, {
-                appointmentTime,
-                triageStatus: 'Doctor Review'
-            })
-            await refetchTriageData()
-            setSelectedTriage(null)
+            try {
+                const selectedTriageData = triageData.find(triage => triage.id === selectedTriage);
+                if (!selectedTriageData) {
+                    throw new Error('Selected triage data not found');
+                }
+                await updateTriageData(selectedTriage, selectedTriageData.patientId, {
+                    appointmentTime,
+                    triageStatus: 'Doctor Review'
+                });
+                await refetchTriageData();
+                setSelectedTriage(null);
+                toast({
+                    title: "Appointment Set",
+                    description: "The appointment has been successfully scheduled.",
+                });
+            } catch (error) {
+                console.error('Failed to set appointment:', error);
+                toast({
+                    title: "Error",
+                    description: "Failed to set the appointment. Please try again.",
+                    variant: "destructive",
+                });
+            }
         }
     }
 
@@ -92,7 +110,8 @@ export function ReceptionistContent() {
                                 <TableCell>{triage.severity}</TableCell>
                                 <TableCell>{triage.nurseNotes}</TableCell>
                                 <TableCell>
-                                    <Button onClick={() => openAppointmentDialog(triage.id)}>Set Appointment</Button>
+                                    <Button onClick={() =>
+                                        openAppointmentDialog(triage.id)}>Set Appointment</Button>
                                 </TableCell>
                             </TableRow>
                         ))}

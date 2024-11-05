@@ -8,8 +8,8 @@ import { TriageData } from '@/utils/types';
 interface TriageContextType {
     triageData: TriageData[];
     addTriageData: (data: Omit<TriageData, 'id'>) => Promise<void>;
-    updateTriageData: (id: string, data: Partial<TriageData>) => Promise<void>;
-    deleteTriageData: (id: string) => Promise<void>; // Add this line
+    updateTriageData: (id: string, patientId: string, data: Partial<TriageData>) => Promise<void>;
+    deleteTriageData: (id: string, patientId: string) => Promise<void>;
     getTriageData: (id: string) => TriageData | undefined;
     refetchTriageData: () => Promise<void>;
 }
@@ -57,33 +57,35 @@ export const TriageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
     }, []);
 
-    const updateTriageData = React.useCallback(async (id: string, data: Partial<TriageData>) => {
+    const updateTriageData = React.useCallback(async (id: string, patientId: string, data: Partial<TriageData>) => {
         try {
             const response = await fetch('/api/triage', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ id, ...data }),
+                body: JSON.stringify({ id, patientId, ...data }),
             });
             if (!response.ok) {
                 throw new Error('Failed to update triage data');
             }
-            console.log('Triage data updated successfully');
+            const result = await response.json();
+            console.log('Triage data updated successfully:', result);
             await fetchTriageData();
         } catch (error) {
             console.error('Error updating triage data:', error);
+            throw error; // Re-throw the error so it can be handled by the component
         }
     }, []);
 
-    const deleteTriageData = React.useCallback(async (id: string) => {
+    const deleteTriageData = React.useCallback(async (id: string, patientId: string) => {
         try {
             const response = await fetch('/api/triage', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ id }),
+                body: JSON.stringify({ id, patientId }),
             });
             if (!response.ok) {
                 throw new Error('Failed to delete triage data');
@@ -105,7 +107,7 @@ export const TriageProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         triageData,
         addTriageData,
         updateTriageData,
-        deleteTriageData, // Add this line
+        deleteTriageData,
         getTriageData,
         refetchTriageData
     }), [triageData, addTriageData, updateTriageData, deleteTriageData, getTriageData, refetchTriageData]);

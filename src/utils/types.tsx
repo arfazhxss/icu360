@@ -69,6 +69,7 @@ export type PatientRecord = {
 
 export interface TriageData {
     id: string;
+    patientId: string;
     patientName: string;
     age: string;
     gender: string;

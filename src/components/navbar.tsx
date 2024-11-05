@@ -1,29 +1,28 @@
-// src/components/navbar.tsx
-
 'use client'
 
-import React, { forwardRef } from 'react'
+import React, { forwardRef, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Card, CardContent } from "@/components/ui/card"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import { Settings, HelpCircle, ChevronRight } from "lucide-react"
+import { Settings, HelpCircle, ChevronRight, LogOut } from "lucide-react"
 import { doctorNavItems } from '@/components/dashboards/doctor-content'
 import { patientNavItems } from '@/components/dashboards/patient-content'
 import { nurseNavItems } from '@/components/dashboards/nurse-content'
 import { pharmacistNavItems } from '@/components/dashboards/pharmacist-content'
 import { receptionistNavItems } from '@/components/dashboards/receptionist-content'
+import { useRole } from '@/contexts/RoleContext'
 
 interface NavbarProps {
-    name: string
-    role: 'doctor' | 'patient' | 'nurse' | 'pharmacist' | 'receptionist'
-    online: string
-    isMobile: boolean
+    isMobile: boolean;
+    name: string;
+    role: 'doctor' | 'patient' | 'nurse' | 'receptionist' | 'pharmacist';
+    online: string;
 }
 
 const roleIcons = {
@@ -69,12 +68,19 @@ const TooltipButton = forwardRef<HTMLButtonElement, React.ComponentPropsWithoutR
 )
 TooltipButton.displayName = 'TooltipButton'
 
-export default function Navbar({ name, role, online, isMobile }: NavbarProps) {
+export default function Navbar({ isMobile, name, role, online }: NavbarProps) {
     const router = useRouter()
-    const [activeTab, setActiveTab] = React.useState(role === 'patient' ? 'My Health' : 'Dashboard')
-    const [darkMode, setDarkMode] = React.useState(false)
-    const [notifications, setNotifications] = React.useState(true)
-    const [isSettingsOpen, setIsSettingsOpen] = React.useState(false)
+    const { signOut } = useRole()
+    const [activeTab, setActiveTab] = useState('')
+    const [darkMode, setDarkMode] = useState(false)
+    const [notifications, setNotifications] = useState(true)
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+
+    useEffect(() => {
+        if (role) {
+            setActiveTab(role === 'patient' ? 'My Health' : 'Dashboard')
+        }
+    }, [role])
 
     const handleTabChange = (newTab: string, route: string) => {
         setActiveTab(newTab)
@@ -98,13 +104,8 @@ export default function Navbar({ name, role, online, isMobile }: NavbarProps) {
                                 <h3 className="font-semibold text-md">{name}</h3>
                                 <p className="text-xs text-muted-foreground capitalize">{role}</p>
                                 <div className="flex items-center mt-1">
-                                    <div
-                                        className={`w-1.5 h-1.5 rounded-full mr-1.5 ${online ? "bg-green-500" : "bg-red-500"
-                                            }`}
-                                    />
-                                    <p className="text-[10px] text-muted-foreground">
-                                        {online ? "Online" : "Offline"}
-                                    </p>
+                                    <div className="w-1.5 h-1.5 rounded-full mr-1.5 bg-green-500" />
+                                    <p className="text-[10px] text-muted-foreground">{online}</p>
                                 </div>
                             </div>
                         )}
@@ -147,6 +148,9 @@ export default function Navbar({ name, role, online, isMobile }: NavbarProps) {
                         <SheetContent>
                             <SheetHeader>
                                 <SheetTitle>Settings</SheetTitle>
+                                <SheetDescription>
+                                    Adjust your application preferences here.
+                                </SheetDescription>
                             </SheetHeader>
                             <div className="py-4 space-y-4">
                                 <div className="flex items-center justify-between">
@@ -175,6 +179,15 @@ export default function Navbar({ name, role, online, isMobile }: NavbarProps) {
                     >
                         <HelpCircle className={`${isMobile ? 'mr-0' : 'mr-2'} h-4 w-4`} />
                         {!isMobile && <span>Help</span>}
+                    </TooltipButton>
+                    <TooltipButton
+                        variant="ghost"
+                        className="w-full justify-start hover:bg-black/5 hover:text-secondary-foreground"
+                        tooltip="Sign Out"
+                        onClick={signOut}
+                    >
+                        <LogOut className={`${isMobile ? 'mr-0' : 'mr-2'} h-4 w-4`} />
+                        {!isMobile && <span>Sign Out</span>}
                     </TooltipButton>
                 </div>
             </div>

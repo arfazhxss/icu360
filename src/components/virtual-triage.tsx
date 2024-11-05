@@ -2,7 +2,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -12,11 +12,12 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { TriageData } from '@/utils/types'
 
 interface VirtualTriageProps {
-  onSubmit: (triageData: Omit<TriageData, 'id'>) => Promise<void>;
+  readonly onSubmit: (triageData: Omit<TriageData, 'id'>) => Promise<void>;
 }
 
-export function VirtualTriage({ onSubmit }: VirtualTriageProps) {
+export default function VirtualTriage({ onSubmit }: VirtualTriageProps) {
   const [formData, setFormData] = useState<Omit<TriageData, 'id'>>({
+    patientId: '',
     patientName: '',
     age: '',
     gender: '',
@@ -28,6 +29,16 @@ export function VirtualTriage({ onSubmit }: VirtualTriageProps) {
     severity: 'Low',
     triageStatus: 'Pending'
   })
+
+  useEffect(() => {
+    const generatePatientId = () => {
+      const timestamp = Date.now().toString(36);
+      const randomStr = Math.random().toString(36).substring(2, 7);
+      return `PAT-${timestamp}-${randomStr}`.toUpperCase();
+    };
+
+    setFormData(prev => ({ ...prev, patientId: generatePatientId() }));
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -55,11 +66,20 @@ export function VirtualTriage({ onSubmit }: VirtualTriageProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     await onSubmit(formData)
-    // Reset form or show confirmation message
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <div>
+        <Label htmlFor="patientId">Patient ID</Label>
+        <Input
+          id="patientId"
+          name="patientId"
+          value={formData.patientId}
+          readOnly
+          className="bg-gray-100"
+        />
+      </div>
       <div>
         <Label htmlFor="patientName">Full Name</Label>
         <Input

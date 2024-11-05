@@ -1,56 +1,42 @@
-// src/app/account/login/page.tsx
+// src/app/account/signup/page.tsx
 
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { useRole } from '@/contexts/RoleContext'
 import TermsOfService from '@/components/terms-of-service'
 import PrivacyPolicy from '@/components/privacy-policy'
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { AlertCircle, Lock, User } from 'lucide-react'
+import { Lock, User, Mail } from 'lucide-react'
 import Link from 'next/link'
 
-export default function HealthcareLogin() {
+export default function PatientSignup() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [email, setEmail] = useState('')
     const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false)
     const [showTermsOfService, setShowTermsOfService] = useState(false)
-    const { setRole, setUser, user } = useRole()
     const router = useRouter()
-
-    useEffect(() => {
-        if (user) {
-            router.push('/dashboard')
-        }
-    }, [user, router])
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault()
-        const response = await fetch('/api/auth/login', {
+        const response = await fetch('/api/auth/signup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ username, password, email }),
         })
 
         if (response.ok) {
-            const userData = await response.json()
-            setRole(userData.role)
-            setUser(userData)
-            router.push('/dashboard')
+            router.push('/account/login')
         } else {
-            // Handle login error
-            console.error('Login failed')
+            // Handle signup error
+            console.error('Signup failed')
         }
-    }
-
-    if (user) {
-        return null // or a loading spinner
     }
 
     return (
@@ -63,29 +49,7 @@ export default function HealthcareLogin() {
             >
                 <Card className="shadow-xl border-0">
                     <CardHeader className="space-y-1 pb-8">
-                        <div className="flex justify-center mb-6">
-                            <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-                            >
-                                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center shadow-lg">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="w-12 h-12 text-white"
-                                    >
-                                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                                    </svg>
-                                </div>
-                            </motion.div>
-                        </div>
-                        <CardTitle className="text-3xl font-bold text-center text-gray-800">ICU360 HealthConnect</CardTitle>
+                        <CardTitle className="text-3xl font-bold text-center text-gray-800">Patient Sign Up</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-6">
@@ -95,7 +59,7 @@ export default function HealthcareLogin() {
                                     <Input
                                         id="username"
                                         type="text"
-                                        placeholder="Enter your username"
+                                        placeholder="Choose a username"
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                         className="pl-10"
@@ -104,12 +68,26 @@ export default function HealthcareLogin() {
                                 </div>
                             </div>
                             <div className="space-y-2">
+                                <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
+                                <div className="relative">
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        placeholder="Enter your email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="pl-10"
+                                    />
+                                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
                                 <Label htmlFor="password" className="text-sm font-medium text-gray-700">Password</Label>
                                 <div className="relative">
                                     <Input
                                         id="password"
                                         type="password"
-                                        placeholder="Enter your password"
+                                        placeholder="Choose a password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         className="pl-10"
@@ -122,18 +100,14 @@ export default function HealthcareLogin() {
                     <CardFooter className="flex flex-col space-y-4">
                         <Button
                             type="submit"
-                            className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white  hover:from-blue-700 hover:to-cyan-600 transition-all duration-300 shadow-md"
+                            className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white hover:from-blue-700 hover:to-cyan-600 transition-all duration-300 shadow-md"
                             onClick={handleSubmit}
-                            disabled={!username || !password}
+                            disabled={!username || !password || !email}
                         >
-                            Log In
+                            Sign Up
                         </Button>
-                        <div className="flex items-center justify-center space-x-1 text-sm text-gray-600">
-                            <AlertCircle className="w-4 h-4" />
-                            <span>Forgot your password? Contact IT  Support</span>
-                        </div>
                         <p className="text-xs text-center text-gray-500">
-                            By logging in, you agree to our{" "}
+                            By signing up, you agree to our{" "}
                             <Dialog open={showTermsOfService} onOpenChange={setShowTermsOfService}>
                                 <DialogTrigger asChild>
                                     <button className="underline hover:text-blue-600">Terms of Service</button>
@@ -153,8 +127,8 @@ export default function HealthcareLogin() {
                             </Dialog>
                         </p>
                         <div className="text-center">
-                            <Link href="/account/signup" className="text-blue-600 hover:underline">
-                                New patient? Sign up here
+                            <Link href="/account/login" className="text-blue-600 hover:underline">
+                                Already have an account? Log in here
                             </Link>
                         </div>
                     </CardFooter>

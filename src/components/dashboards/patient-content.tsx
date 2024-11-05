@@ -1,34 +1,38 @@
-// src/components/dashboards/patient-content.tsx
-
 'use client'
 
 import { SingleCard } from '@/components/shared-components'
 import { Home, Calendar, Clipboard, Stethoscope, Activity, AlertTriangle } from "lucide-react"
-import { VirtualTriage } from '@/components/virtual-triage'
 import { Button } from "@/components/ui/button"
 import { useState } from 'react'
 import { useTriageContext } from '@/contexts/TriageContext'
 import { TriageData } from '@/utils/types'
+import { useRole } from '@/contexts/RoleContext'
+import VirtualTriage from '@/components/virtual-triage'
+import TriageReceipt from '@/components/receipt'
 
 export const patientNavItems = [
-    { icon: Home, label: 'My Health', route: '/' },
-    { icon: Calendar, label: 'Appointments', route: '/appointments' },
-    { icon: Clipboard, label: 'Medical History', route: '/history' },
-    { icon: Stethoscope, label: 'Consultations', route: '/consultations' },
-    { icon: Activity, label: 'Health Resources', route: '/resources' },
-    { icon: AlertTriangle, label: 'Virtual Triage', route: '/triage' },
+    { icon: Home, label: 'My Health', route: '/dashboard' },
+    { icon: Calendar, label: 'Appointments', route: '/dashboard/appointments' },
+    { icon: Clipboard, label: 'Medical History', route: '/dashboard/history' },
+    { icon: Stethoscope, label: 'Consultations', route: '/dashboard/consultations' },
+    { icon: Activity, label: 'Health Resources', route: '/dashboard/resources' },
+    { icon: AlertTriangle, label: 'Virtual Triage', route: '/dashboard/triage' },
 ]
 
 export function PatientContent() {
     const [showTriage, setShowTriage] = useState(false)
     const { triageData, addTriageData } = useTriageContext()
+    const { user } = useRole()
 
-    // In a real application, you would use the actual patient's name or ID
-    const patientTriages = triageData.filter(triage => triage.patientName === "Current Patient Name")
+    const patientTriages = triageData.filter(triage => triage.patientId === user?.id)
 
     const handleTriageSubmit = async (triageData: Omit<TriageData, 'id'>) => {
-        await addTriageData(triageData)
-        setShowTriage(false)
+        if (user) {
+            await addTriageData({ ...triageData, patientId: user.id })
+            setShowTriage(false)
+            // Refresh triage data after submission
+            // We might want to implement a function to fetch updated triage data here
+        }
     }
 
     return (
@@ -74,6 +78,10 @@ export function PatientContent() {
                         <VirtualTriage onSubmit={handleTriageSubmit} />
                     </div>
                 )}
+            </div>
+            <div className="mt-8">
+                <h3 className="text-xl font-semibold mb-4">Triage Receipts</h3>
+                <TriageReceipt />
             </div>
         </>
     )
