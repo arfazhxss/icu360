@@ -79,7 +79,7 @@ export interface TriageData {
     medicalHistory: string[];
     additionalNotes: string;
     severity: 'Low' | 'Medium' | 'High';
-    triageStatus: 'Pending' | 'Nurse Review' | 'Receptionist Review' | 'Doctor Review' | 'Pharmacist Review' | 'Completed';
+    triageStatus: 'Pending' | 'Nurse Review' | 'Receptionist Review' | 'Doctor Review' | 'Pharmacist Review' | 'Completed' | null;
     nurseNotes?: string;
     doctorNotes?: string;
     prescription?: string;

@@ -44,16 +44,16 @@ export function RoleProvider({ children }: Readonly<{ children: ReactNode }>) {
         checkSession();
     }, []);
 
-    const signOut = async () => {
+    const signOut = React.useCallback(async () => {
         const response = await fetch('/api/auth/signout', { method: 'POST' });
         if (response.ok) {
             setUser(null);
             setRole(null);
             router.push('/account/login');
         }
-    };
+    }, [router]);
 
-    const value = React.useMemo(() => ({ role, setRole, user, setUser, signOut }), [role, user, router]);
+    const value = React.useMemo(() => ({ role, setRole, user, setUser, signOut }), [role, user, signOut]);
 
     return (
         <RoleContext.Provider value={value}>

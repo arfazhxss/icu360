@@ -42,11 +42,18 @@ async function writeData(data: Data): Promise<void> {
 export async function GET(): Promise<NextResponse> {
     try {
         const data = await readData()
+
+        // Initialize triageData for patients if it doesn't exist
+        data.patients = data.patients.map(patient => ({
+            ...patient,
+            triageData: patient.triageData || []
+        }))
+
         const allTriageData = data.patients.flatMap(patient => patient.triageData)
         return NextResponse.json(allTriageData)
     } catch (error) {
         console.error('Error reading triage data:', error)
-        return NextResponse.json([], { status: 200 })
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }
 }
 
@@ -71,12 +78,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         return NextResponse.json({
             message: 'Triage data added successfully',
             data: newData
-        })
+        }, { status: 201 })
     } catch (error) {
         console.error('Error adding triage data:', error)
         return NextResponse.json({
-            message: 'Error adding triage data',
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: 'Internal Server Error'
         }, { status: 500 })
     }
 }
@@ -110,8 +116,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
     } catch (error) {
         console.error('Error updating triage data:', error)
         return NextResponse.json({
-            message: 'Error updating triage data',
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: 'Internal Server Error'
         }, { status: 500 })
     }
 }
@@ -126,18 +131,22 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
             return NextResponse.json({ error: 'Patient not found' }, { status: 404 })
         }
 
+        const initialLength = data.patients[patientIndex].triageData.length
         data.patients[patientIndex].triageData = data.patients[patientIndex].triageData.filter(t => t.id !== id)
+
+        if (data.patients[patientIndex].triageData.length === initialLength) {
+            return NextResponse.json({ error: 'Triage data not found' }, { status: 404 })
+        }
+
         await writeData(data)
 
         return NextResponse.json({
-            message: 'Triage data deleted successfully',
-            data: data.patients[patientIndex].triageData
-        })
+            message: 'Triage data deleted successfully'
+        }, { status: 200 })
     } catch (error) {
         console.error('Error deleting triage data:', error)
         return NextResponse.json({
-            message: 'Error deleting triage data',
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: 'Internal Server Error'
         }, { status: 500 })
     }
 }
