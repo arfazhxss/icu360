@@ -1,3 +1,4 @@
+// src/app/api/triage/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { getPatients, setPatients, getAllTriageData } from '@/lib/redis'
 import { TriageData } from '@/types/data'

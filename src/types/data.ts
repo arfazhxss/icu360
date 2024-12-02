@@ -1,3 +1,4 @@
+// src/types/data.ts
 export { };
 export interface User {
     id: string;

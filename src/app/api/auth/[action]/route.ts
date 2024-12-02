@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getUsers, getPatients, setPatients } from '@/lib/kv'
+import { getUsers, getPatients, setPatients } from '@/lib/redis'
+import { Patient } from '@/types/data'
 
 export async function POST(request: NextRequest, { params }: { params: { action: string } }) {
     const { action } = params
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest, { params }: { params: { action:
             return NextResponse.json({ error: 'Username already exists' }, { status: 400 })
         }
 
-        const newPatient = {
+        const newPatient: Patient = {
             id: `patient${patients.length + 1}`,
             name: username,
             role: 'patient',
@@ -36,11 +37,11 @@ export async function POST(request: NextRequest, { params }: { params: { action:
             triageData: []
         }
 
-        patients.push(newPatient)
-        await setPatients(patients)
+        await setPatients([...patients, newPatient])
 
         return NextResponse.json({ message: 'Patient registered successfully' })
     }
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
 }
+

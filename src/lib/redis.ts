@@ -1,3 +1,4 @@
+// src/lib/redis.ts
 import { Redis } from '@upstash/redis'
 import { User, Patient, TriageData } from '@/types/data'
 
