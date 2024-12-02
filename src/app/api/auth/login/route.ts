@@ -1,41 +1,17 @@
 // src/app/api/auth/login/route.ts
-
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import fs from 'fs/promises'
-import path from 'path'
-import { TriageData } from '@/utils/types'
-
-const DATA_FILE = path.join(process.cwd(), 'src', 'data', 'triage-data.json')
-
-interface User {
-    id: string;
-    name: string;
-    role: string;
-    username: string;
-    password: string;
-}
-
-interface Patient extends User {
-    email: string;
-}
-
-interface Data {
-    users: User[];
-    patients: Patient[];
-    triageData: TriageData[];
-}
-
-async function readData(): Promise<Data> {
-    const data = await fs.readFile(DATA_FILE, 'utf8')
-    return JSON.parse(data)
-}
+import { getUsers, getPatients } from '@/lib/redis'
+import { User, Patient } from '@/types/data'
 
 export async function POST(request: NextRequest) {
     const { username, password } = await request.json()
-    const data = await readData()
 
-    const user = [...data.users, ...data.patients].find(u => u.username === username && u.password === password)
+    const users = await getUsers()
+    const patients = await getPatients()
+    const allUsers: (User | Patient)[] = [...users, ...patients]
+
+    const user = allUsers.find(u => u.username === username && u.password === password)
 
     if (user) {
         const session = {
